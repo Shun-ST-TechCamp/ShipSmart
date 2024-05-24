@@ -12,6 +12,7 @@ java_import javax.swing.JOptionPane
 # 変換メソッドをインポート
 require_relative 'converters/amazon_to_sagawa'
 require_relative 'converters/amazon_to_clickpost'
+require_relative 'converters/amazon_to_japanpost'
 # 他のコンバータファイルも同様にインポートする
 # require_relative 'converters/yahoo_to_sagawa'
 # require_relative 'converters/rakuten_to_sagawa'
@@ -91,17 +92,16 @@ file_button.add_action_listener do |e|
       #   JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
       # end
     when "郵便局（定型便）"
-      # 各ショップに対応する郵便局のコンバータを呼び出す
-      # case @selected_shop
-      # when "アマゾン"
-      #   convert_amazon_to_japanpost(file)
+      case @selected_shop
+      when "アマゾン"
+        convert_amazon_to_japanpost(file)
       # when "ヤフーショッピング"
       #   convert_yahoo_to_japanpost(file)
       # when "楽天"
       #   convert_rakuten_to_japanpost(file)
-      # else
-      #   JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
-      # end
+      else
+        JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
+      end
     when "クリックポスト"
       case @selected_shop
       when "アマゾン"

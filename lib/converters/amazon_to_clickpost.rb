@@ -4,9 +4,8 @@ require 'csv'
 def convert_amazon_to_clickpost(file)
   output_file = file.sub('.txt', '_clickpost.csv')
   clickpost_headers = [
-    "お届け先郵便番号", "お届け先氏名", "お届け先敬称", 
-    "お届け先住所1行目", "お届け先住所2行目", "お届け先住所3行目", "お届け先住所4行目", 
-    "内容品"
+    "お届け先郵便番号", "お届け先氏名", "お届け先敬称", "お届け先住所1行目", "お届け先住所2行目",
+    "お届け先住所3行目", "お届け先住所4行目", "内容品"
   ]
 
   CSV.open(output_file, "w", write_headers: true, headers: clickpost_headers) do |csv|
