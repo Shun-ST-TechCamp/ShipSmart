@@ -11,6 +11,7 @@ java_import javax.swing.JOptionPane
 
 # 変換メソッドをインポート
 require_relative 'converters/amazon_to_sagawa'
+require_relative 'converters/amazon_to_clickpost'
 # 他のコンバータファイルも同様にインポートする
 # require_relative 'converters/yahoo_to_sagawa'
 # require_relative 'converters/rakuten_to_sagawa'
@@ -26,7 +27,7 @@ carrier_label = javax.swing.JLabel.new("配送業者が選択されていませ�
 
 carrier_button.add_action_listener do |e|
   options = ["佐川急便", "ヤマト", "郵便局（定型便）", "クリックポスト"]
-  selected_option = JOptionPane.showInputDialog(nil, "配送業者を選択してください", "配送業者選択", 3, nil, options.to_java, options[0]) # 3はQUESTION_MESSAGE
+  selected_option = JOptionPane.showInputDialog(nil, "配送業者を選択してください", "配送業者選択", JOptionPane::QUESTION_MESSAGE, nil, options.to_java, options[0])
   if selected_option
     carrier_label.setText("選択した配送業者: #{selected_option}")
     @selected_carrier = selected_option
@@ -41,7 +42,7 @@ shop_label = javax.swing.JLabel.new("ショップが選択されていません"
 
 shop_button.add_action_listener do |e|
   options = ["アマゾン", "ヤフーショッピング", "楽天"]
-  selected_option = JOptionPane.showInputDialog(nil, "ショップを選択してください", "ショップ選択", 3, nil, options.to_java, options[0]) # 3はQUESTION_MESSAGE
+  selected_option = JOptionPane.showInputDialog(nil, "ショップを選択してください", "ショップ選択", JOptionPane::QUESTION_MESSAGE, nil, options.to_java, options[0])
   if selected_option
     shop_label.setText("選択したショップ: #{selected_option}")
     @selected_shop = selected_option
@@ -102,17 +103,16 @@ file_button.add_action_listener do |e|
       #   JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
       # end
     when "クリックポスト"
-      # 各ショップに対応するクリックポストのコンバータを呼び出す
-      # case @selected_shop
-      # when "アマゾン"
-      #   convert_amazon_to_clickpost(file)
+      case @selected_shop
+      when "アマゾン"
+        convert_amazon_to_clickpost(file)
       # when "ヤフーショッピング"
       #   convert_yahoo_to_clickpost(file)
       # when "楽天"
       #   convert_rakuten_to_clickpost(file)
-      # else
-      #   JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
-      # end
+      else
+        JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
+      end
     else
       JOptionPane.showMessageDialog(nil, "配送業者が選択されていません。", "エラー", JOptionPane::ERROR_MESSAGE)
     end
