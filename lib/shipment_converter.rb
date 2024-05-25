@@ -13,9 +13,7 @@ java_import javax.swing.JOptionPane
 require_relative 'converters/amazon_to_sagawa'
 require_relative 'converters/amazon_to_clickpost'
 require_relative 'converters/amazon_to_japanpost'
-# 他のコンバータファイルも同様にインポートする
-# require_relative 'converters/yahoo_to_sagawa'
-# require_relative 'converters/rakuten_to_sagawa'
+require_relative 'converters/amazon_to_yamato'
 
 # GUIの設定
 frame = JFrame.new("ShipSmart Converter")
@@ -72,33 +70,31 @@ file_button.add_action_listener do |e|
       case @selected_shop
       when "アマゾン"
         convert_amazon_to_sagawa(file)
-      # when "ヤフーショッピング"
-      #   convert_yahoo_to_sagawa(file)
-      # when "楽天"
-      #   convert_rakuten_to_sagawa(file)
       else
         JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
       end
     when "ヤマト"
-      # 各ショップに対応するヤマトのコンバータを呼び出す
-      # case @selected_shop
-      # when "アマゾン"
-      #   convert_amazon_to_yamato(file)
-      # when "ヤフーショッピング"
-      #   convert_yahoo_to_yamato(file)
-      # when "楽天"
-      #   convert_rakuten_to_yamato(file)
-      # else
-      #   JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
-      # end
+      # 送り主情報ファイルを選択
+      JOptionPane.showMessageDialog(nil, "発送者情報ファイルを選択してください", "情報", JOptionPane::INFORMATION_MESSAGE)
+      sender_file_chooser = JFileChooser.new
+      sender_result = sender_file_chooser.show_open_dialog(nil)
+
+      if sender_result == JFileChooser::APPROVE_OPTION
+        sender_file = sender_file_chooser.get_selected_file.to_s
+        sender_info = read_sender_info(sender_file)
+        case @selected_shop
+        when "アマゾン"
+          convert_amazon_to_yamato(file, sender_info)
+        else
+          JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
+        end
+      else
+        JOptionPane.showMessageDialog(nil, "発送者情報ファイルが選択されませんでした。", "エラー", JOptionPane::ERROR_MESSAGE)
+      end
     when "郵便局（定型便）"
       case @selected_shop
       when "アマゾン"
         convert_amazon_to_japanpost(file)
-      # when "ヤフーショッピング"
-      #   convert_yahoo_to_japanpost(file)
-      # when "楽天"
-      #   convert_rakuten_to_japanpost(file)
       else
         JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
       end
@@ -106,10 +102,6 @@ file_button.add_action_listener do |e|
       case @selected_shop
       when "アマゾン"
         convert_amazon_to_clickpost(file)
-      # when "ヤフーショッピング"
-      #   convert_yahoo_to_clickpost(file)
-      # when "楽天"
-      #   convert_rakuten_to_clickpost(file)
       else
         JOptionPane.showMessageDialog(nil, "このショップには対応していません。", "エラー", JOptionPane::ERROR_MESSAGE)
       end
@@ -117,6 +109,16 @@ file_button.add_action_listener do |e|
       JOptionPane.showMessageDialog(nil, "配送業者が選択されていません。", "エラー", JOptionPane::ERROR_MESSAGE)
     end
   end
+end
+
+# 発送者情報を読み込む関数
+def read_sender_info(file)
+  sender_info = {}
+  File.readlines(file).each do |line|
+    key, value = line.split(':').map(&:strip)
+    sender_info[key] = value
+  end
+  sender_info
 end
 
 # フレームにコンポーネントを追加
