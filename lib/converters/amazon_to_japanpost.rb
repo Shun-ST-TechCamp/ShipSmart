@@ -13,7 +13,13 @@ class Float
   end
 end
 
-def convert_amazon_to_japanpost(file)
+class Integer
+  def mm
+    self.to_f.mm
+  end
+end
+
+def convert_amazon_to_japanpost(file, sender_info)
   output_pdf = file.sub('.txt', '_japanpost.pdf')
   font_path = File.join(File.dirname(__FILE__), '../ipaexg.ttf')  # フォントファイルのパスを指定
 
@@ -36,10 +42,10 @@ def convert_amazon_to_japanpost(file)
     return
   end
 
-  generate_japanpost_pdf(customers, output_pdf, font_path)
+  generate_japanpost_pdf(customers, output_pdf, font_path, sender_info)
 end
 
-def generate_japanpost_pdf(customers, output_pdf, font_path)
+def generate_japanpost_pdf(customers, output_pdf, font_path, sender_info)
   Prawn::Document.generate(output_pdf, page_layout: :portrait, margin: [21.5.mm, 18.6.mm]) do |pdf|
     pdf.font_families.update("IPAexGothic" => {
       normal: font_path,
@@ -62,13 +68,20 @@ def generate_japanpost_pdf(customers, output_pdf, font_path)
           pdf.stroke_bounds
           pdf.undash
           pdf.move_down 5
-          pdf.text "　　〒：#{customer[:postal_code]}"
+          pdf.text "テスト商品の登録番号", size: 10 #商品の登録番号（文字サイズ10）
+          pdf.text "テスト送り先情報", size: 10 #送り先情報（文字サイズ10）
           pdf.move_down 5  # 1行スペースを追加
-          pdf.text "　住所：#{customer[:address1]}"
-          pdf.text "　　　　#{customer[:address2]}"
-          pdf.text "　　　　#{customer[:address3]}" unless customer[:address3].nil? || customer[:address3].empty?
-          pdf.move_down 5  # 1行スペースを追加
-          pdf.text "　名前：#{customer[:name]} 様"
+          pdf.text "　　〒：#{customer[:postal_code]}", size: 10 # 文字サイズ10
+          pdf.text "　　　　#{customer[:address1]}", size: 10 # 文字サイズ10
+          pdf.text "　　　　#{customer[:address2]}", size: 10 # 文字サイズ10
+          pdf.text "　　　　#{customer[:address3]}", size: 12 # 文字サイズ10
+          pdf.move_down 5
+          pdf.text "　　　　#{customer[:name]} 様", size: 10 # 文字サイズ10
+          pdf.move_down 20
+          pdf.text "#{sender_info['ご依頼主名']}　　　", size: 7,align: :right #自分の名前（文字サイズ10）
+          pdf.text "#{sender_info['ご依頼主住所']}　　　" , size: 7,align: :right  # 自分の住所
+          pdf.text "#{sender_info['ご依頼主アパートマンション']}　　　", size: 7,align: :right
+          pdf.text "#{sender_info['ショップ名']}　　　", size: 7,align: :right #ショップ名（文字サイズ10）
         end
       end
       pdf.start_new_page unless page_customers.equal?(customers.last(10))
