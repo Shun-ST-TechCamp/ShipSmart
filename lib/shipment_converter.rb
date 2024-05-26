@@ -1,4 +1,3 @@
-# lib/shipment_converter.rb
 require 'csv'
 require 'prawn'
 require 'java'
@@ -127,7 +126,7 @@ end
 # 発送者情報を読み込む関数
 def read_sender_info(file)
   sender_info = {}
-  File.readlines(file).each do |line|
+  File.readlines(file, encoding: 'UTF-8').each do |line|
     key, value = line.split(':').map(&:strip)
     sender_info[key] = value
   end
